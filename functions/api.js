@@ -3,16 +3,6 @@ function isValidDate(date) {
   return date instanceof Date && !isNaN(date);
 }
 
-// Helper function to format UTC string
-function formatUTCString(date) {
-  return date.toUTCString();
-}
-
-// Helper function to get Unix timestamp in milliseconds
-function getUnixTimestamp(date) {
-  return date.getTime();
-}
-
 // Main handler function
 exports.handler = async (event, context) => {
   // Set CORS headers
@@ -33,31 +23,39 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Get the date from the path
-    // The path will be like "/.netlify/functions/api/1451001600000" or "/.netlify/functions/api/"
-    let date = '';
-    if (event.path.includes('/.netlify/functions/api/')) {
-      date = event.path.replace('/.netlify/functions/api/', '');
+    let dateParam = '';
+    const path = event.path || '';
+    
+    // Extract date from path for Netlify function structure
+    if (path.includes('/.netlify/functions/api/')) {
+      dateParam = path.split('/.netlify/functions/api/')[1];
+    } 
+    // Extract date for direct /api/ path access
+    else if (path.startsWith('/api/')) {
+      dateParam = path.split('/api/')[1];
     }
     
     // If no date in path, check query parameters
-    if (!date && event.queryStringParameters?.date) {
-      date = event.queryStringParameters.date;
+    if (!dateParam && event.queryStringParameters?.date) {
+      dateParam = event.queryStringParameters.date;
     }
     
     let parsedDate;
     
     // If no date parameter is provided, use current time
-    if (!date || date === '' || date === '/') {
+    if (!dateParam) {
       parsedDate = new Date();
     } else {
-      // If the date string consists only of digits, treat it as a Unix timestamp
-      if (/^\d+$/.test(date)) {
-        // Parse the string to an integer and create a new Date object
-        parsedDate = new Date(parseInt(date));
+      // Remove any trailing slash
+      dateParam = dateParam.replace(/\/$/, '');
+      
+      // If the date string consists only of digits, treat it as Unix timestamp
+      if (/^\d+$/.test(dateParam)) {
+        parsedDate = new Date(parseInt(dateParam));
       } else {
-        // Otherwise, parse it as a date string
-        parsedDate = new Date(date);
+        // Handle any URI encoding in the date string
+        const decodedDate = decodeURIComponent(dateParam);
+        parsedDate = new Date(decodedDate);
       }
     }
     
