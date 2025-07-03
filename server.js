@@ -35,13 +35,12 @@ app.get('/api/:date?', (req, res) => {
   if (!date) {
     parsedDate = new Date();
   } else {
-    // Try to parse the date parameter
-    // First, check if it's a Unix timestamp (number)
-    const timestamp = parseInt(date);
-    if (!isNaN(timestamp) && timestamp.toString() === date) {
-      parsedDate = new Date(timestamp);
+    // If the date string consists only of digits, treat it as a Unix timestamp
+    if (/^\d+$/.test(date)) {
+      // Parse the string to an integer and create a new Date object
+      parsedDate = new Date(parseInt(date));
     } else {
-      // Try parsing as a date string
+      // Otherwise, parse it as a date string
       parsedDate = new Date(date);
     }
   }
