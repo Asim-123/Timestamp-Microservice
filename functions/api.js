@@ -53,9 +53,10 @@ exports.handler = async (event, context) => {
     } else {
       // Try to parse the date parameter
       // First, check if it's a Unix timestamp (number)
-      // Only treat as timestamp if it's a pure number and looks like a timestamp
-      if (/^\d+$/.test(date) && date.length >= 10) {
-        const timestamp = parseInt(date);
+      // Try to parse the date parameter
+      // First, check if it's a Unix timestamp (number)
+      const timestamp = parseInt(date);
+      if (!isNaN(timestamp) && timestamp.toString() === date) {
         parsedDate = new Date(timestamp);
       } else {
         // Try parsing as a date string

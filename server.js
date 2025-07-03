@@ -3,7 +3,7 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -35,11 +35,13 @@ app.get('/api/:date?', (req, res) => {
   if (!date) {
     parsedDate = new Date();
   } else {
-    // Only treat as timestamp if it's a pure number and looks like a timestamp
-    if (/^\d+$/.test(date) && date.length >= 10) {
-      const timestamp = parseInt(date);
+    // Try to parse the date parameter
+    // First, check if it's a Unix timestamp (number)
+    const timestamp = parseInt(date);
+    if (!isNaN(timestamp) && timestamp.toString() === date) {
       parsedDate = new Date(timestamp);
     } else {
+      // Try parsing as a date string
       parsedDate = new Date(date);
     }
   }

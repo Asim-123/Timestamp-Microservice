@@ -31,12 +31,14 @@ testCases.forEach(testCase => {
     parsedDate = new Date();
     console.log('Using current time');
   } else {
-    // Only treat as timestamp if it's a pure number and looks like a timestamp
-    if (/^\d+$/.test(testCase) && testCase.length >= 10) {
-      const timestamp = parseInt(testCase);
+    // Try to parse the date parameter
+    // First, check if it's a Unix timestamp (number)
+    const timestamp = parseInt(testCase);
+    if (!isNaN(timestamp) && timestamp.toString() === testCase) {
       parsedDate = new Date(timestamp);
       console.log('Parsed as timestamp');
     } else {
+      // Try parsing as a date string
       parsedDate = new Date(testCase);
       console.log('Parsed as date string');
     }
