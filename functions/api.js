@@ -23,32 +23,19 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    let dateParam = '';
-    const path = event.path || '';
+    // Extract date parameter from the path
+    const pathSegments = event.path.split('/');
+    let dateParam = pathSegments[pathSegments.length - 1];
     
-    // Extract date from path for Netlify function structure
-    if (path.includes('/.netlify/functions/api/')) {
-      dateParam = path.split('/.netlify/functions/api/')[1];
-    } 
-    // Extract date for direct /api/ path access
-    else if (path.startsWith('/api/')) {
-      dateParam = path.split('/api/')[1];
-    }
-    
-    // If no date in path, check query parameters
-    if (!dateParam && event.queryStringParameters?.date) {
-      dateParam = event.queryStringParameters.date;
-    }
+    // Remove any trailing slash or empty segments
+    dateParam = dateParam.replace(/\/$/, '');
     
     let parsedDate;
     
-    // If no date parameter is provided, use current time
-    if (!dateParam) {
+    // If no date parameter is provided or it's empty, use current time
+    if (!dateParam || dateParam === '' || dateParam === 'api') {
       parsedDate = new Date();
     } else {
-      // Remove any trailing slash
-      dateParam = dateParam.replace(/\/$/, '');
-      
       // If the date string consists only of digits, treat it as Unix timestamp
       if (/^\d+$/.test(dateParam)) {
         parsedDate = new Date(parseInt(dateParam));
@@ -85,28 +72,3 @@ exports.handler = async (event, context) => {
     };
   }
 };
-
-app.get('/api/:date?', (req, res) => {
-  const dateParam = req.params.date;
-  
-  let parsedDate;
-  
-  if (!dateParam || dateParam === '' || dateParam === '/') {
-    parsedDate = new Date();
-  } else {
-    if (/^\d+$/.test(dateParam)) {
-      parsedDate = new Date(parseInt(dateParam));
-    } else {
-      parsedDate = new Date(dateParam);
-    }
-  }
-  
-  if (!isValidDate(parsedDate)) {
-    res.json({ error: "Invalid Date" });
-  } else {
-    res.json({
-      unix: parsedDate.getTime(),
-      utc: parsedDate.toUTCString()
-    });
-  }
-}); 
