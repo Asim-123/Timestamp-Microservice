@@ -51,8 +51,6 @@ exports.handler = async (event, context) => {
     if (!date || date === '' || date === '/') {
       parsedDate = new Date();
     } else {
-      // Try to parse the date parameter
-      // First, check if it's a Unix timestamp (number)
       // If the date string consists only of digits, treat it as a Unix timestamp
       if (/^\d+$/.test(date)) {
         // Parse the string to an integer and create a new Date object
@@ -77,8 +75,8 @@ exports.handler = async (event, context) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        unix: getUnixTimestamp(parsedDate),
-        utc: formatUTCString(parsedDate)
+        unix: parsedDate.getTime(),
+        utc: parsedDate.toUTCString()
       })
     };
   } catch (error) {
