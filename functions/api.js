@@ -86,4 +86,29 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({ error: "Internal Server Error" })
     };
   }
-}; 
+};
+
+app.get('/api/:date?', (req, res) => {
+  const dateParam = req.params.date;
+  
+  let parsedDate;
+  
+  if (!dateParam || dateParam === '' || dateParam === '/') {
+    parsedDate = new Date();
+  } else {
+    if (/^\d+$/.test(dateParam)) {
+      parsedDate = new Date(parseInt(dateParam));
+    } else {
+      parsedDate = new Date(dateParam);
+    }
+  }
+  
+  if (!isValidDate(parsedDate)) {
+    res.json({ error: "Invalid Date" });
+  } else {
+    res.json({
+      unix: parsedDate.getTime(),
+      utc: parsedDate.toUTCString()
+    });
+  }
+}); 

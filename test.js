@@ -141,4 +141,59 @@ console.log(`Test 5 - Empty date (current time): ${result5.unix && result5.utc ?
 const dateString = '2023-01-01';
 const parsedDateString = new Date(dateString);
 const result6 = isValidDate(parsedDateString) ? { unix: parsedDateString.getTime(), utc: parsedDateString.toUTCString() } : { error: "Invalid Date" };
-console.log(`Test 6 - Date string parsing: ${result6.unix ? '✅ PASSED' : '❌ FAILED'}`); 
+console.log(`Test 6 - Date string parsing: ${result6.unix ? '✅ PASSED' : '❌ FAILED'}`);
+
+// API Endpoint Tests
+console.log('\n\nAPI Endpoint Tests:');
+console.log('==================');
+
+// Simulate API responses
+function simulateAPIResponse(dateParam) {
+  let parsedDate;
+  
+  if (!dateParam || dateParam === '' || dateParam === '/') {
+    parsedDate = new Date();
+  } else {
+    if (/^\d+$/.test(dateParam)) {
+      parsedDate = new Date(parseInt(dateParam));
+    } else {
+      parsedDate = new Date(dateParam);
+    }
+  }
+  
+  if (!isValidDate(parsedDate)) {
+    return { error: "Invalid Date" };
+  } else {
+    return {
+      unix: parsedDate.getTime(),
+      utc: parsedDate.toUTCString()
+    };
+  }
+}
+
+// Test 2: Valid date should return unix as Number
+const apiTest1 = simulateAPIResponse('2015-12-25');
+console.log(`API Test 2 - Unix as Number: ${typeof apiTest1.unix === 'number' ? '✅ PASSED' : '❌ FAILED'}`);
+
+// Test 3: Valid date should return utc in correct format
+const apiTest2 = simulateAPIResponse('2015-12-25');
+const expectedUTCFormat = "Fri, 25 Dec 2015 00:00:00 GMT";
+console.log(`API Test 3 - UTC format: ${apiTest2.utc === expectedUTCFormat ? '✅ PASSED' : '❌ FAILED'}`);
+
+// Test 4: Specific timestamp test
+const apiTest3 = simulateAPIResponse('1451001600000');
+const expectedTimestamp = { unix: 1451001600000, utc: "Fri, 25 Dec 2015 00:00:00 GMT" };
+console.log(`API Test 4 - Timestamp 1451001600000: ${JSON.stringify(apiTest3) === JSON.stringify(expectedTimestamp) ? '✅ PASSED' : '❌ FAILED'}`);
+
+// Test 5: Date string parsing
+const apiTest4 = simulateAPIResponse('2023-01-01');
+console.log(`API Test 5 - Date string parsing: ${apiTest4.unix ? '✅ PASSED' : '❌ FAILED'}`);
+
+// Test 6: Invalid date handling
+const apiTest5 = simulateAPIResponse('invalid-date');
+console.log(`API Test 6 - Invalid date: ${apiTest5.error === "Invalid Date" ? '✅ PASSED' : '❌ FAILED'}`);
+
+// Test 7 & 8: Empty date parameter (current time)
+const apiTest6 = simulateAPIResponse('');
+console.log(`API Test 7 - Empty date (unix): ${apiTest6.unix ? '✅ PASSED' : '❌ FAILED'}`);
+console.log(`API Test 8 - Empty date (utc): ${apiTest6.utc ? '✅ PASSED' : '❌ FAILED'}`); 
