@@ -34,19 +34,28 @@ exports.handler = async (event, context) => {
 
   try {
     // Get the date from the path
-    const path = event.path.replace('/.netlify/functions/api/', '');
-    const date = path || event.queryStringParameters?.date;
+    // The path will be like "/.netlify/functions/api/1451001600000" or "/.netlify/functions/api/"
+    let date = '';
+    if (event.path.includes('/.netlify/functions/api/')) {
+      date = event.path.replace('/.netlify/functions/api/', '');
+    }
+    
+    // If no date in path, check query parameters
+    if (!date && event.queryStringParameters?.date) {
+      date = event.queryStringParameters.date;
+    }
     
     let parsedDate;
     
     // If no date parameter is provided, use current time
-    if (!date || date === '') {
+    if (!date || date === '' || date === '/') {
       parsedDate = new Date();
     } else {
       // Try to parse the date parameter
       // First, check if it's a Unix timestamp (number)
-      const timestamp = parseInt(date);
-      if (!isNaN(timestamp)) {
+      // Only treat as timestamp if it's a pure number and looks like a timestamp
+      if (/^\d+$/.test(date) && date.length >= 10) {
+        const timestamp = parseInt(date);
         parsedDate = new Date(timestamp);
       } else {
         // Try parsing as a date string
