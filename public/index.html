@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp Microservice</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Timestamp Microservice</h1>
+            <p>Convert dates to Unix timestamps and UTC strings</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <h2>Try it out</h2>
+                <div class="input-group">
+                    <input type="text" id="dateInput" placeholder="Enter a date (e.g., 2015-12-25, 1451001600000, or leave empty for current time)">
+                    <button id="convertBtn">Convert</button>
+                </div>
+                <div class="examples">
+                    <p><strong>Examples:</strong></p>
+                    <ul>
+                        <li><code>/api/2015-12-25</code></li>
+                        <li><code>/api/1451001600000</code></li>
+                        <li><code>/api/</code> (current time)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="result-section" id="resultSection" style="display: none;">
+                <h2>Result</h2>
+                <div class="result-card">
+                    <div class="result-item">
+                        <label>Unix Timestamp:</label>
+                        <code id="unixResult"></code>
+                    </div>
+                    <div class="result-item">
+                        <label>UTC String:</label>
+                        <code id="utcResult"></code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="error-section" id="errorSection" style="display: none;">
+                <h2>Error</h2>
+                <div class="error-card">
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h2>API Usage</h2>
+                <div class="api-card">
+                    <h3>Endpoint</h3>
+                    <code>GET /api/:date?</code>
+                    
+                    <h3>Parameters</h3>
+                    <ul>
+                        <li><code>date</code> (optional): A valid date string or Unix timestamp</li>
+                    </ul>
+                    
+                    <h3>Response Format</h3>
+                    <pre><code>{
+  "unix": 1451001600000,
+  "utc": "Fri, 25 Dec 2015 00:00:00 GMT"
+}</code></pre>
+                    
+                    <h3>Error Response</h3>
+                    <pre><code>{
+  "error": "Invalid Date"
+}</code></pre>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Built for FreeCodeCamp API and Microservices Certification</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
